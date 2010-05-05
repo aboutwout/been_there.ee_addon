@@ -64,8 +64,10 @@ class Been_there {
 
     if($entry_id === false)
     {
-      $entry_id = ( ! $TMPL->fetch_param('entry_id') ) ? $this->_detect_current_entry() : $TMPL->fetch_param('entry_id');
+      $entry_id = $TMPL->fetch_param('entry_id') ? $this->_entry_exists($TMPL->fetch_param('entry_id')) : $this->_entry_exists();
     }
+    
+    if($entry_id === false) return;
 
     $this->expire = ( is_numeric($TMPL->fetch_param('expire')) ) ? intval($TMPL->fetch_param('expire')) : $this->expire;
     $this->set = ( $TMPL->fetch_param('set') == 'no' ) ? false : true;
@@ -81,25 +83,30 @@ class Been_there {
       // Set a cookie with an expiration date 3 months in the future
       $FNS->set_cookie("been_there[$entry_id]", true, time() + ($this->expire * 2678400));
     }
-    
-        
-    
+
     return;
     
 	}
-	
-	function _detect_current_entry() {
-	  
-	  global $IN, $DB;
-	  $entry_id = $IN->QSTR;
-	  if( is_numeric($entry_id) ) return $entry_id;
 
-	  $results = $DB->query("SELECT entry_id, url_title FROM exp_weblog_titles WHERE url_title = '$entry_id'");
+	/**
+	* Check if an entry exists for the given parameter
+	*
+	* @param	string	$in entry_id or url_title of a weblog entry
+	* @return	mixed [integer|boolean]
+	*/
+  function _entry_exists($in = false) {
+
+    global $DB, $IN;
     
-    return ($results->num_rows > 0) ? $results->row['entry_id'] : false;
+    if($in === false) {
+      $in = $IN->QSTR;
+    }
 
-	}
-
+    $query = "SELECT entry_id, url_title FROM exp_weblog_titles WHERE entry_id = '$in' OR url_title = '$in'";
+ 	  $results = $DB->query($query);
+    
+    return ($results->num_rows > 0) ? $results->row['entry_id'] : false;    
+  }
 
 	/**
 	* Plugin Usage
