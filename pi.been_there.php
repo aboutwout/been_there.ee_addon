@@ -2,7 +2,7 @@
 
 $plugin_info = array(
 	'pi_name'			=> 'Been There',
-	'pi_version'		=> '0.8',
+	'pi_version'		=> '1.0',
 	'pi_author'			=> 'Wouter Vervloet',
 	'pi_author_url'		=> '',
 	'pi_description'	=> 'Tell a user if he has already viewed this particular entry.',
@@ -13,7 +13,7 @@ $plugin_info = array(
 * Been There Plugin class
 *
 * @package		  been_there-ee_addon
-* @version			0.8
+* @version			1.0
 * @author			  Wouter Vervloet <wouter@baseworks.nl>
 * @license			http://creativecommons.org/licenses/by-sa/3.0/
 */
