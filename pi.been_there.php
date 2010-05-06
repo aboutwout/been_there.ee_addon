@@ -33,13 +33,26 @@ class Been_there {
 	*/
   var $set = true;
   
-  // 
 	/**
 	* Expire the cookie after a number of months. default = 3 months
 	*
 	* @var	integer
 	*/
   var $expire = 3;
+
+	/**
+	* Data to return when plugin returns true
+	*
+	* @var	string
+	*/
+  var $yes = '';
+
+	/**
+	* Data to return when plugin returns false
+	*
+	* @var	string
+	*/
+  var $no = '';
 
 	/**
 	* PHP4 Constructor
@@ -68,13 +81,25 @@ class Been_there {
     }
     
     if($entry_id === false) return;
-
+    
+    foreach ($TMPL->var_pair as $key => $val)
+    {
+      if (preg_match("/yes|no/", $key)) {
+        $this->$key = $TMPL->fetch_data_between_var_pairs($TMPL->tagdata, $key);
+      }
+    }
+    
+    if($this->yes == '')
+    {
+      $this->yes = $TMPL->tagdata;
+    }
+    
     $this->expire = ( is_numeric($TMPL->fetch_param('expire')) ) ? intval($TMPL->fetch_param('expire')) : $this->expire;
     $this->set = ( $TMPL->fetch_param('set') == 'no' ) ? false : true;
 
     if( isset($_COOKIE["exp_been_there"][$entry_id]) )
     {
-      $this->return_data = $TMPL->tagdata;
+      $this->return_data = $this->yes;
       return;
     }
     
@@ -83,6 +108,8 @@ class Been_there {
       // Set a cookie with an expiration date 3 months in the future
       $FNS->set_cookie("been_there[$entry_id]", true, time() + ($this->expire * 2678400));
     }
+
+    $this->return_data = $this->no;
 
     return;
     
@@ -98,7 +125,8 @@ class Been_there {
 
     global $DB, $IN;
     
-    if($in === false) {
+    if($in === false)
+    {
       $in = $IN->QSTR;
     }
 
@@ -119,7 +147,8 @@ class Been_there {
 		?>
 		
 			{exp:been_there entry_id='36' set='no'}
-			  You have already seen this entry.
+			  {yes}You have already seen this entry.{/yes}
+			  {no}This is the first time seeing this entry.{/no}
 			{/exp:been_there}
 			
 			or
